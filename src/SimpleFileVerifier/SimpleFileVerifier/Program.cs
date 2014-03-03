@@ -141,7 +141,7 @@
                 {
                     // If file does not exist, report as file cannot be found
                     Console.WriteLine(Environment.NewLine + hashedFileName + " - File not found");
-                    hashInformation = hashInformation + Environment.NewLine + hashedFileName + " - File not found";
+                    hashInformation = hashInformation + Environment.NewLine + hashedFileName + " - FILE NOT FOUND";
                 }
                 
             }            
