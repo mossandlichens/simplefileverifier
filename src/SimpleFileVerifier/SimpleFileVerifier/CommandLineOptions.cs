@@ -23,6 +23,12 @@
         [Option('c', "check", HelpText = "Check SFV File")]
         public string Check { get; set; }
 
+        [Option('r', "recursive", HelpText = "Look at subdirectories. Default: false. Options: true/false")]
+        public string Recursive { get; set; }
+
+        [Option('l', "log", HelpText = "Log file generated during check")]
+        public string Log { get; set; }
+
         [Option('v', "verbose", DefaultValue = true,
           HelpText = "Prints all messages to standard output.")]
         public bool Verbose { get; set; }

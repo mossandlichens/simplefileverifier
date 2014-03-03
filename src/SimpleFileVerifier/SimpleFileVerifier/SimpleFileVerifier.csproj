@@ -79,6 +79,7 @@
     <Content Include="External\x64\CodeFluent.Runtime.Compression.dll" />
     <Content Include="External\x86\CodeFluent.Runtime.Compression.dll" />
     <Content Include="FodyWeavers.xml" />
+    <Content Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

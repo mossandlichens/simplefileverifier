@@ -18,6 +18,8 @@
                 string file = commandLineOptions.File;
                 string pattern = commandLineOptions.Pattern;
                 string check = commandLineOptions.Check;
+                string recursive = commandLineOptions.Recursive;
+                string logFile = commandLineOptions.Log;
                 string hashInformation = string.Empty;
 
                 Console.WriteLine("SimpleFileVerifier by Ranjith Venkatesh" + Environment.NewLine);
@@ -26,10 +28,13 @@
                 if (File.Exists(check))
                 {
                     CheckSFVFile(check, ref hashInformation);
+                    PrintToFile(logFile, hashInformation);
                 }
                 else if (File.Exists(file))
                 {
-                    PrintFileCRC32Hash(file, ref hashInformation);
+                    PrintFileCRC32Hash(Path.GetDirectoryName(file), file, ref hashInformation);
+
+                    Console.WriteLine(Environment.NewLine + "SimpleFileVerifier has successfully created the CRC32 hashes.");
                 }
                 else if (Directory.Exists(directory))
                 {
@@ -41,19 +46,46 @@
                         searchPattern = pattern;
                     }
 
-                    foreach (FileInfo fileInfo in directoryInfo.GetFiles(searchPattern))
+                    SearchOption searchOption = SearchOption.TopDirectoryOnly;
+                    if (string.IsNullOrEmpty(recursive) == false)
                     {
-                        PrintFileCRC32Hash(fileInfo.FullName, ref hashInformation);
+                        bool searchOptionRecursive = false;
+                        bool.TryParse(recursive, out searchOptionRecursive);
+                        if (searchOptionRecursive == true)
+                        {
+                            searchOption = SearchOption.AllDirectories;
+                        }
                     }
+
+                    foreach (FileInfo fileInfo in directoryInfo.GetFiles(searchPattern, searchOption))
+                    {
+                        if(fileInfo.FullName.EndsWith("sfv"))
+                        {
+                            continue;
+                        }
+
+                        PrintFileCRC32Hash(directory, fileInfo.FullName, ref hashInformation);
+                    }
+
+                    Console.WriteLine(Environment.NewLine + "SimpleFileVerifier has successfully created the CRC32 hashes.");
+                    PrintToFile(outputFile, hashInformation);
                 }
                 else
                 {
                     Console.WriteLine(commandLineOptions.GetUsage());
                     return result;
                 }
+                
+                result = 1;
+            }
 
-                Console.WriteLine(Environment.NewLine + "SimpleFileVerifier has successfully created the CRC32 hashes.");
+            return result;
+        }
 
+        private static void PrintToFile(string outputFile, string hashInformation)
+        {
+            if (string.IsNullOrEmpty(outputFile) == false)
+            {
                 string outputDirectory = Path.GetDirectoryName(outputFile);
                 if (Directory.Exists(outputDirectory))
                 {
@@ -62,39 +94,65 @@
                 }
                 else
                 {
-                    Console.WriteLine(Environment.NewLine + "SimpleFileVerifier cannot find the directory to write the sfv file:" + outputDirectory);
+                    Console.WriteLine(Environment.NewLine + "SimpleFileVerifier cannot find the directory to write the file:" + outputDirectory);
                 }
-
-                Console.WriteLine(Environment.NewLine + "SimpleFileVerifier has written the CRC32 hashes to the file:" + outputFile);
-
-                result = 1;
+                Console.WriteLine(Environment.NewLine + "SimpleFileVerifier has written the to the file:" + outputFile);
             }
-
-            return result;
         }
 
         private static void CheckSFVFile(string check, ref string hashInformation)
         {
             string[] sfvFileContents = File.ReadAllLines(check);
+            string sfvFileDirectory = Path.GetDirectoryName(check);
             foreach (string hashedFile in sfvFileContents)
             {
+                if (hashedFile.StartsWith(";") == true || hashedFile.Length == 0)
+                {
+                    continue;
+                }
+
                 // Get file name and original CRC32 hash
+                string[] hashedFileLine = hashedFile.Split(' ');
 
+                int indexOfLastSpace = hashedFile.LastIndexOf(' ');
+                string hashedFileName = hashedFile.Substring(0, indexOfLastSpace);
+                string originalCrc32Hash = hashedFile.Substring(indexOfLastSpace + 1);
+                
+                string hashedFileNameFullPath = sfvFileDirectory + "/" + hashedFileName;
                 // Check if file exists
+                if (File.Exists(hashedFileNameFullPath))
+                {
+                    // If file exists, generate CRC32 hash and compare with original hash
+                    string crc32Hash = GetCRC32Hash(hashedFileNameFullPath);
 
-                // If file exists, generate CRC32 hash and compare with original hash
-
-                    // Report as hash is correct or wrong
-
-                // If file does not exist, report as file cannot be found
+                    // Report as hash as correct or wrong
+                    if (originalCrc32Hash == crc32Hash)
+                    {
+                        Console.WriteLine(Environment.NewLine + hashedFileName + " - OK");
+                        hashInformation = hashInformation + Environment.NewLine + hashedFileName + " - OK";
+                    }
+                    else
+                    {
+                        Console.WriteLine(Environment.NewLine + hashedFileName + " - NOT OK");
+                        hashInformation = hashInformation + Environment.NewLine + hashedFileName + " - NOT OK";
+                    }
+                }
+                else
+                {
+                    // If file does not exist, report as file cannot be found
+                    Console.WriteLine(Environment.NewLine + hashedFileName + " - File not found");
+                    hashInformation = hashInformation + Environment.NewLine + hashedFileName + " - File not found";
+                }
+                
             }            
         }
 
-        private static void PrintFileCRC32Hash(string file, ref string hashInformation)
+        private static void PrintFileCRC32Hash(string directory, string file, ref string hashInformation)
         {
             string crc32Hash = GetCRC32Hash(file);
-            hashInformation = hashInformation + Environment.NewLine + Path.GetFileName(file) + " " + crc32Hash;
-            Console.WriteLine(Path.GetFileName(file) + " " + crc32Hash);
+            string relativeFilePath = "." + file.Replace(directory, "");
+            hashInformation = hashInformation + Environment.NewLine + relativeFilePath + " " + crc32Hash;
+            Console.WriteLine(relativeFilePath + " " + crc32Hash);
         }
 
         private static string GetCRC32Hash(string file)

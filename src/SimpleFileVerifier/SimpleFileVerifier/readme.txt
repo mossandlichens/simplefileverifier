@@ -1,0 +1,1 @@
+﻿-d "E:\Projects\Rodenstock\RoCo\Delivery\RoCo\Releases\3.56.0.0" -r true -o "E:\Projects\Rodenstock\RoCo\Delivery\RoCo\Releases\3.56.0.0\simpleRecursive.sfv"
