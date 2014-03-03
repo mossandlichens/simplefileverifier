@@ -20,6 +20,9 @@
         [Option('p', "pattern", HelpText = "Search pattern")]
         public string Pattern { get; set; }
 
+        [Option('c', "check", HelpText = "Check SFV File")]
+        public string Check { get; set; }
+
         [Option('v', "verbose", DefaultValue = true,
           HelpText = "Prints all messages to standard output.")]
         public bool Verbose { get; set; }

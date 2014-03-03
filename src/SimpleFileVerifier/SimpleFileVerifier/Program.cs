@@ -17,12 +17,17 @@
                 string directory = commandLineOptions.Directory;
                 string file = commandLineOptions.File;
                 string pattern = commandLineOptions.Pattern;
+                string check = commandLineOptions.Check;
                 string hashInformation = string.Empty;
 
                 Console.WriteLine("SimpleFileVerifier by Ranjith Venkatesh" + Environment.NewLine);
                 Console.WriteLine("CRC32 Hashes calculated using CodeFluent Runtime Client" + Environment.NewLine);
 
-                if (File.Exists(file))
+                if (File.Exists(check))
+                {
+                    CheckSFVFile(check, ref hashInformation);
+                }
+                else if (File.Exists(file))
                 {
                     PrintFileCRC32Hash(file, ref hashInformation);
                 }
@@ -66,6 +71,23 @@
             }
 
             return result;
+        }
+
+        private static void CheckSFVFile(string check, ref string hashInformation)
+        {
+            string[] sfvFileContents = File.ReadAllLines(check);
+            foreach (string hashedFile in sfvFileContents)
+            {
+                // Get file name and original CRC32 hash
+
+                // Check if file exists
+
+                // If file exists, generate CRC32 hash and compare with original hash
+
+                    // Report as hash is correct or wrong
+
+                // If file does not exist, report as file cannot be found
+            }            
         }
 
         private static void PrintFileCRC32Hash(string file, ref string hashInformation)
