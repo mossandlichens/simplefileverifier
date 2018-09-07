@@ -1,18 +1,21 @@
 ﻿namespace SimpleFileVerifier
 {
+    using CommandLine;
     using System;
     using System.IO;
+    using System.Data.HashFunction.CRC;
 
     public class Program
     {
-        public static int Main(string[] args)
+        public static void Main(string[] args)
         {
-            int result = 0;
+            Parser.Default.ParseArguments<CommandLineOptions>(args)
+                .WithParsed<CommandLineOptions>(commandLineOptions => RunWithOptions(commandLineOptions));
+        }
 
-            var commandLineOptions = new CommandLineOptions();
-
-            if (CommandLine.Parser.Default.ParseArguments(args, commandLineOptions))
-            {
+        private static void RunWithOptions(CommandLineOptions commandLineOptions)
+        {
+            
                 string outputFile = commandLineOptions.Output;
                 string directory = commandLineOptions.Directory;
                 string file = commandLineOptions.File;
@@ -59,7 +62,7 @@
 
                     foreach (FileInfo fileInfo in directoryInfo.GetFiles(searchPattern, searchOption))
                     {
-                        if(fileInfo.FullName.EndsWith("sfv"))
+                        if (fileInfo.FullName.EndsWith("sfv"))
                         {
                             continue;
                         }
@@ -70,16 +73,8 @@
                     Console.WriteLine(Environment.NewLine + "SimpleFileVerifier has successfully created the CRC32 hashes.");
                     PrintToFile(outputFile, hashInformation);
                 }
-                else
-                {
-                    Console.WriteLine(commandLineOptions.GetUsage());
-                    return result;
-                }
-                
-                result = 1;
-            }
 
-            return result;
+
         }
 
         private static void PrintToFile(string outputFile, string hashInformation)
@@ -158,7 +153,7 @@
         private static string GetCRC32Hash(string file)
         {
             byte[] fileByteArray = FileToByteArray(file);
-            uint crcUintValue = CodeFluent.Runtime.Utilities.Crc32.Compute(fileByteArray);
+            var crcUintValue = CRCFactory.Instance.Create().ComputeHash(fileByteArray);
             return string.Format("{0:X}", crcUintValue);
         }
 

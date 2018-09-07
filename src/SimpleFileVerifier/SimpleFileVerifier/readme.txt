@@ -1,10 +1,10 @@
 ﻿Simple File Verifier helps to create the CRC32 hash for a file or files satisfying a pattern in a directory. It also creates a SFV file with files and hashes.
 
-Simple File Verifier by Ranjith Venkatesh
+Simple File Verifier by Moss and Lichens (Ranjith Venkatesh)
 
 Usage:
 Simple File Verifier 1.1.0.0
-Copyright © 2014
+Copyright © 2018
 
   -o, --output       Path to SFV File
 

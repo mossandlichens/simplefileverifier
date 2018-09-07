@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Simple File Verifier")]
 [assembly: AssemblyDescription("Create CRC32 Hash for files and directories")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Ranjith Venkatesh")]
+[assembly: AssemblyCompany("Moss and Lichens")]
 [assembly: AssemblyProduct("Simple File Verifier")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
